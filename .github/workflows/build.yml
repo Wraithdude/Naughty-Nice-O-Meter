@@ -27,6 +27,11 @@ jobs:
           unzip cmdline-tools.zip -d $HOME/android-sdk/cmdline-tools
           yes | $HOME/android-sdk/cmdline-tools/cmdline-tools/bin/sdkmanager "build-tools;34.0.0" "platform-tools" "platforms;android-30"
 
+      - name: Link Build Tools for Buildozer
+        run: |
+          mkdir -p /home/runner/.buildozer/android/platform/android-sdk
+          ln -s $HOME/android-sdk/build-tools /home/runner/.buildozer/android/platform/android-sdk/build-tools
+
       - name: Set ANDROID_HOME
         run: echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
 

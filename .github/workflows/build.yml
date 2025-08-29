@@ -46,7 +46,14 @@ jobs:
 
       # Verify AIDL installation
       - name: Verify AIDL
-        run: find $ANDROID_HOME -name aidl || echo "AIDL not found!"
+        run: |
+          AIDL_PATH=$(find $ANDROID_HOME -name aidl)
+          if [ -z "$AIDL_PATH" ]; then
+            echo "AIDL not found! Build will likely fail."
+            exit 1
+          else
+            echo "AIDL found at $AIDL_PATH"
+          fi
 
       # Install dependencies
       - name: Install dependencies

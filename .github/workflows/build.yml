@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches:
-      - main   # or "master" depending on your default branch
+      - main
 
 jobs:
   build:
@@ -13,6 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Install Android SDK Command-line Tools
       - name: Install Android SDK Command-line Tools
         run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
@@ -21,12 +22,23 @@ jobs:
           unzip cmdline-tools.zip -d cmdline-tools
           mv cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
-      - name: Add Android SDK to PATH
-        run: echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+      # Add Android SDK to PATH and set ANDROID_HOME
+      - name: Set ANDROID_HOME and PATH
+        run: |
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
+      # Verify sdkmanager installation
+      - name: Verify sdkmanager
+        run: |
+          which sdkmanager
+          sdkmanager --version
+
+      # Install SDK packages
       - name: Install SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-33"
+        run: sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0" "platforms;android-30"
 
+      # Install dependencies
       - name: Install dependencies
         run: |
           sudo apt update
@@ -34,25 +46,17 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Install Android Build Tools
-        run: |
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          unzip cmdline-tools.zip -d $HOME/android-sdk/cmdline-tools
-          yes | $HOME/android-sdk/cmdline-tools/cmdline-tools/bin/sdkmanager "build-tools;34.0.0" "platform-tools" "platforms;android-30"
-
+      # Link Build Tools for Buildozer
       - name: Link Build Tools for Buildozer
         run: |
           mkdir -p /home/runner/.buildozer/android/platform/android-sdk
           ln -s $HOME/android-sdk/build-tools /home/runner/.buildozer/android/platform/android-sdk/build-tools
 
-      - name: Set ANDROID_HOME
-        run: echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-
+      # Build APK
       - name: Build APK
-        run: |
-          buildozer android debug
+        run: buildozer android debug
 
+      # Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:

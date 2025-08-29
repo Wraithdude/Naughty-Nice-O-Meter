@@ -22,6 +22,12 @@ jobs:
           unzip cmdline-tools.zip -d cmdline-tools
           mv cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
+      # Symlink sdkmanager to Buildozer's expected location
+      - name: Link sdkmanager for Buildozer
+        run: |
+          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
+          ln -sf $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
+
       # Add Android SDK to PATH and set ANDROID_HOME
       - name: Set ANDROID_HOME and PATH
         run: |

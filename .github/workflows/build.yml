@@ -55,8 +55,10 @@ jobs:
       # Link Build Tools for Buildozer
       - name: Link Build Tools for Buildozer
         run: |
-          mkdir -p /home/runner/.buildozer/android/platform/android-sdk
-          ln -s $HOME/android-sdk/build-tools /home/runner/.buildozer/android/platform/android-sdk/build-tools
+          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools
+          for dir in $HOME/android-sdk/build-tools/*; do
+            ln -sf "$dir"/* /home/runner/.buildozer/android/platform/android-sdk/build-tools/
+          done
 
       # Build APK
       - name: Build APK

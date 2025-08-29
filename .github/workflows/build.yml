@@ -44,6 +44,10 @@ jobs:
       - name: Install SDK packages
         run: sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0" "platforms;android-30"
 
+      # Install AIDL via SDK Manager
+      - name: Ensure AIDL is available
+        run: sdkmanager "build-tools;34.0.0"
+
       # Install dependencies
       - name: Install dependencies
         run: |
